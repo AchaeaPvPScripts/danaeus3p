@@ -22,6 +22,7 @@
 				<script>local m = multimatches[2]
 local caller, victim = m[2], m[4]
 local afflictions = string.split(m[3]:lower(), " and ")
+-- display(afflictions) -- debug
 danaeus.feed(caller, victim, afflictions)</script>
 				<triggerType>0</triggerType>
 				<conditonLineDelta>0</conditonLineDelta>
@@ -46,10 +47,12 @@ danaeus.feed(caller, victim, afflictions)</script>
 					<script>local caller, victim = matches[2], matches[3]
 local affliction = danaeus.callers[caller][victim][1]
 danaeus.addQueue(victim, affliction)
-table.remove(danaeus.callers[caller][victim], 1) </script>
+table.remove(danaeus.callers[caller][victim], 1) 
+last_victim = victim
+last_aff = affliction</script>
 					<triggerType>0</triggerType>
 					<conditonLineDelta>0</conditonLineDelta>
-					<mStayOpen>0</mStayOpen>
+					<mStayOpen>1</mStayOpen>
 					<mCommand></mCommand>
 					<packageName></packageName>
 					<mFgColor>#ff0000</mFgColor>
@@ -64,6 +67,10 @@ table.remove(danaeus.callers[caller][victim], 1) </script>
 						<string>^Lunging forward with long, flashing claws extended, (\w+) tears into (\w+) ruthlessly\.$</string>
 						<string>^(\w+) lunges at (\w+) with long, flashing claws extended, tearing into .+ ruthlessly\.</string>
 						<string>^(\w+) rips into (\w+) with \w+ massive, deadly claws\.$</string>
+						<string>^(\S+) follows up the first attack with another, \w+ dirk piercing the flesh of (\S+)\.$</string>
+						<string>^(\S+) quickly pricks (\S+) with \w+ dirk\.$</string>
+						<string>^(\S+) snaps \w+ wrist in a practiced motion, bringing .+ back around to strike at (\S+) a second time\.$</string>
+						<string>^(\S+) sinks \w+ fangs into (\S+)\'s body\.$</string>
 					</regexCodeList>
 					<regexCodePropertyList>
 						<integer>1</integer>
@@ -72,7 +79,41 @@ table.remove(danaeus.callers[caller][victim], 1) </script>
 						<integer>1</integer>
 						<integer>1</integer>
 						<integer>1</integer>
+						<integer>1</integer>
+						<integer>1</integer>
+						<integer>1</integer>
+						<integer>1</integer>
 					</regexCodePropertyList>
+					<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+						<name>Belay last! Belay last!</name>
+						<script>local t = danaeus.queue[last_victim]
+local n = table.index_of(t, last_affliction)
+
+-- display(danaeus.queue) -- debug
+table.remove(t, n)
+if #t &lt; 1 then danaeus.queue[last_victim] = nil end
+-- display(danaeus.queue) -- debug</script>
+						<triggerType>0</triggerType>
+						<conditonLineDelta>0</conditonLineDelta>
+						<mStayOpen>0</mStayOpen>
+						<mCommand></mCommand>
+						<packageName></packageName>
+						<mFgColor>#ff0000</mFgColor>
+						<mBgColor>#ffff00</mBgColor>
+						<mSoundFile></mSoundFile>
+						<colorTriggerFgColor>#000000</colorTriggerFgColor>
+						<colorTriggerBgColor>#000000</colorTriggerBgColor>
+						<regexCodeList>
+							<string>misses!</string>
+							<string>The attack rebounds back onto </string>
+							<string>parries the attack</string>
+						</regexCodeList>
+						<regexCodePropertyList>
+							<integer>0</integer>
+							<integer>2</integer>
+							<integer>0</integer>
+						</regexCodePropertyList>
+					</Trigger>
 				</Trigger>
 				<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
 					<name>Unblockables</name>
@@ -425,7 +466,7 @@ setTriggerStayOpen("The Party Call", 0)</script>
 					</Trigger>
 					<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
 						<name>Choke/Asthma</name>
-						<script>raiseEvent("danaeus affs gated", matches[2], {"asthma"}, {"hallucinations"})</script>
+						<script>raiseEvent("danaeus affs gated", matches[2], "asthma", "hallucinations")</script>
 						<triggerType>0</triggerType>
 						<conditonLineDelta>0</conditonLineDelta>
 						<mStayOpen>0</mStayOpen>
@@ -465,7 +506,7 @@ setTriggerStayOpen("The Party Call", 0)</script>
 					</Trigger>
 					<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
 						<name>Roil/Anorexia</name>
-						<script>raiseEvent("danaeus affs gained", matches[2], {"anorexia", "asthma", "weariness"})</script>
+						<script>raiseEvent("danaeus affs gained", matches[2], "anorexia", "asthma", "weariness")</script>
 						<triggerType>0</triggerType>
 						<conditonLineDelta>0</conditonLineDelta>
 						<mStayOpen>0</mStayOpen>
@@ -485,7 +526,7 @@ setTriggerStayOpen("The Party Call", 0)</script>
 					</Trigger>
 					<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
 						<name>wreck</name>
-						<script>raiseEvent("danaeus affs gained", matches[2], {"stupidity", "recklessness"}) </script>
+						<script>raiseEvent("danaeus affs gained", matches[2], "stupidity", "recklessness") </script>
 						<triggerType>0</triggerType>
 						<conditonLineDelta>0</conditonLineDelta>
 						<mStayOpen>0</mStayOpen>
@@ -565,7 +606,7 @@ setTriggerStayOpen("The Party Call", 0)</script>
 					</Trigger>
 					<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
 						<name>addiction</name>
-						<script>raiseEvent("danaeus affs gained", matches[2], {"addiction", "weariness", "haemophilia"})</script>
+						<script>raiseEvent("danaeus affs gained", matches[2], "addiction", "weariness", "haemophilia")</script>
 						<triggerType>0</triggerType>
 						<conditonLineDelta>0</conditonLineDelta>
 						<mStayOpen>0</mStayOpen>
@@ -621,7 +662,7 @@ setTriggerStayOpen("The Party Call", 0)</script>
 					</Trigger>
 					<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
 						<name>Maqam</name>
-						<script>raiseEvent("danaeus affs gated", matches[2], {"clumsiness"}, {"dizziness"})</script>
+						<script>raiseEvent("danaeus affs gated", matches[2], "clumsiness", "dizziness")</script>
 						<triggerType>0</triggerType>
 						<conditonLineDelta>0</conditonLineDelta>
 						<mStayOpen>0</mStayOpen>
@@ -819,7 +860,7 @@ setTriggerStayOpen("The Party Call", 0)</script>
 					</Trigger>
 					<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
 						<name>Bubonis asthma/sickness</name>
-						<script>raiseEvent("danaeus affs gated", matches[2], {"asthma"}, {"slickness"})</script>
+						<script>raiseEvent("danaeus affs gated", matches[2], "asthma", "slickness")</script>
 						<triggerType>0</triggerType>
 						<conditonLineDelta>0</conditonLineDelta>
 						<mStayOpen>0</mStayOpen>

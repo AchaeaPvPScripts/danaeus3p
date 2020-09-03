@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MudletPackage>
+<MudletPackage version="1.001">
+	<ScriptPackage>
+		<ScriptGroup isActive="yes" isFolder="yes">
+			<name>3p attack tracking</name>
+			<packageName></packageName>
+			<script>danaeus = danaeus or {}
+danaeus.callers = danaeus.callers or {}
+danaeus.queue = danaeus.queue or {}
+
+danaeus.feed = function(caller, victim, afflictions)
+  danaeus.callers[caller] = danaeus.callers[caller] or {}
+  danaeus.callers[caller][victim] = danaeus.callers[caller][victim] or {}
+  for _, aff in ipairs(afflictions) do
+    table.insert(danaeus.callers[caller][victim], aff)
+  end
+end
+
+
+danaeus.addQueue = function(victim, affliction)
+  danaeus.queue[victim] = danaeus.queue[victim] or {}
+  table.insert(danaeus.queue[victim], affliction)
+end</script>
+			<eventHandlerList />
+			<Script isActive="yes" isFolder="no">
+				<name>ak_handler</name>
+				<packageName></packageName>
+				<script>function ak_handler(e, who, ...)
+  if not IsTargetted(matches[2]) then return end
+  
+  
+  local afflictions = {...}
+  if e == "danaeus aff gained" or e == "danaeus affs gained" then
+    for _, aff in ipairs(afflictions) do
+      OppGainedAff(aff)
+    end
+  elseif e == "danaeus affs gated" then
+    for _, aff in ipairs(afflictions) do
+      if affstrack.score[aff] &lt; 100 then
+        OppGainedAff(aff) break
+      end
+    end
+  end
+end</script>
+				<eventHandlerList>
+					<string>danaeus aff gained</string>
+					<string>danaeus affs gained</string>
+					<string>danaeus affs gated</string>
+				</eventHandlerList>
+			</Script>
+		</ScriptGroup>
+	</ScriptPackage>
+</MudletPackage>
